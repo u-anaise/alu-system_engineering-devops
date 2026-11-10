@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Installs nginx on the server and makes it serve "Holberton School for the win!" on port 80
-sudo apt-get update -y
-sudo apt-get install nginx -y
-echo "Holberton School for the win!" | sudo tee /var/www/html/index.html
-sudo service nginx restart
+# Installs nginx and serves "Holberton School for the win!" on port 80
+run() { if [ "$(id -u)" -eq 0 ]; then "$@"; else sudo "$@"; fi; }
+run apt-get update -y
+run apt-get install -y nginx
+echo "Holberton School for the win!" | run tee /var/www/html/index.html
+run service nginx restart
