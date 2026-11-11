@@ -3,7 +3,7 @@
 run() { if [ "$(id -u)" -eq 0 ]; then "$@"; else sudo "$@"; fi; }
 export DEBIAN_FRONTEND=noninteractive
 run apt-get update -y
-run apt-get install -y nginx
+run apt-get install -y nginx curl
 echo "Holberton School for the win!" | run tee /var/www/html/index.html
 run service nginx restart
 if ! run service nginx status > /dev/null 2>&1
