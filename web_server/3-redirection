@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
-# Installs nginx, serves a page, and redirects /redirect_me with a 301
+# Installs nginx and redirects /redirect_me to another page with a 301
 run() { if [ "$(id -u)" -eq 0 ]; then "$@"; else sudo "$@"; fi; }
 export DEBIAN_FRONTEND=noninteractive
 run apt-get update -y
 run apt-get install -y nginx curl
-echo "Holberton School for the win!" | run tee /var/www/html/index.html
+echo "Holberton School for the win!" | run tee /var/www/html/index.html > /dev/null
 run tee /etc/nginx/sites-available/default > /dev/null << 'EOF'
 server {
     listen 80 default_server;
-    listen [::]:80 default_server;
     root /var/www/html;
     index index.html;
     server_name _;
@@ -20,9 +19,5 @@ server {
     }
 }
 EOF
-run service nginx restart
-if ! run service nginx status > /dev/null 2>&1
-then
-  run nginx
-fi
-curl -sI localhost/redirect_me
+run nginx -t
+run service nginx restart || run nginx
