@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Installs nginx and serves "Holberton School for the win!" on port 80
 run() { if [ "$(id -u)" -eq 0 ]; then "$@"; else sudo "$@"; fi; }
+export DEBIAN_FRONTEND=noninteractive
 run apt-get update -y
 run apt-get install -y nginx
 echo "Holberton School for the win!" | run tee /var/www/html/index.html
