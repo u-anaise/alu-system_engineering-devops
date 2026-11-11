@@ -5,3 +5,8 @@ run apt-get update -y
 run apt-get install -y nginx
 echo "Holberton School for the win!" | run tee /var/www/html/index.html
 run service nginx restart
+if ! run service nginx status > /dev/null 2>&1
+then
+  run nginx
+fi
+curl -s localhost
