@@ -1,7 +1,28 @@
 #!/usr/bin/env bash
-# Installs nginx, serves the page, and adds a 301 redirect from /redirect_me
-sudo apt-get update -y
-sudo apt-get install nginx -y
-echo "Holberton School for the win!" | sudo tee /var/www/html/index.html
-sudo sed -i "s/server_name _;/server_name _;\n\trewrite ^\/redirect_me https:\/\/www.youtube.com\/watch?v=QH2-TGUlwu4 permanent;/" /etc/nginx/sites-available/default
-sudo service nginx restart
+# Installs nginx, serves a page, and redirects /redirect_me with a 301
+run() { if [ "$(id -u)" -eq 0 ]; then "$@"; else sudo "$@"; fi; }
+export DEBIAN_FRONTEND=noninteractive
+run apt-get update -y
+run apt-get install -y nginx curl
+echo "Holberton School for the win!" | run tee /var/www/html/index.html
+run tee /etc/nginx/sites-available/default > /dev/null << 'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html;
+    server_name _;
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+EOF
+run service nginx restart
+if ! run service nginx status > /dev/null 2>&1
+then
+  run nginx
+fi
+curl -sI localhost/redirect_me
